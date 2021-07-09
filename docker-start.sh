@@ -1,13 +1,8 @@
-#!/bin/bash
-/etc/init.d/mysql start
-cd /opt/staytus
+#!/bin/sh
 
 # Configure DB with random password, if not already configured
 if [ ! -f /opt/staytus/persisted/config/database.yml ]; then
   export RANDOM_PASSWORD=`openssl rand -base64 32`
-
-  mysqladmin -u root -ptemp-password password $RANDOM_PASSWORD
-  echo "CREATE DATABASE staytus CHARSET utf8 COLLATE utf8_unicode_ci" | mysql -u root -p$RANDOM_PASSWORD
 
   cp config/database.example.yml config/database.yml
   sed -i "s/username:.*/username: root/" config/database.yml
@@ -28,4 +23,4 @@ else
   bundle exec rake staytus:build staytus:upgrade
 fi
 
-bundle exec foreman start
+exec "$@"
